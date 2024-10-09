@@ -5,12 +5,14 @@ import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.types.TypedRealmObject
 import org.mathieu.data.local.objects.CharacterObject
+import org.mathieu.data.local.objects.LocationObject
 import kotlin.reflect.KClass
 
 internal class RMDatabase : RealmDatabase(
     "rick and morty",
     setOf(
-        CharacterObject::class
+        CharacterObject::class,
+        LocationObject::class
     ),
     1
 )

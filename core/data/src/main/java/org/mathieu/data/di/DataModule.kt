@@ -3,7 +3,9 @@ package org.mathieu.data.di
 import io.ktor.client.HttpClient
 import org.koin.dsl.module
 import org.mathieu.data.repositories.CharacterRepositoryImpl
+import org.mathieu.data.repositories.LocationRepositoryImpl
 import org.mathieu.domain.repositories.CharacterRepository
+import org.mathieu.domain.repositories.LocationRepository
 
 //https://rickandmortyapi.com/documentation/#rest
 private const val RMAPI_URL = "https://rickandmortyapi.com/api/"
@@ -20,11 +22,22 @@ val dataModule = module {
 
     single { org.mathieu.data.local.CharacterLocal(get()) }
 
+    single { org.mathieu.data.local.LocationLocal(get()) }
+
     single { org.mathieu.data.remote.CharacterApi(get()) }
+
+    single { org.mathieu.data.remote.LocationApi(get()) }
 
     single<CharacterRepository> {
         CharacterRepositoryImpl(
             get(),
+            get(),
+            get()
+        )
+    }
+
+    single<LocationRepository> {
+        LocationRepositoryImpl(
             get(),
             get()
         )

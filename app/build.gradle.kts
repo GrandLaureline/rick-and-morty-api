@@ -66,6 +66,7 @@ dependencies {
     implementation(project(":core:ui"))
 
     implementation(project(":features:characters"))
+    implementation(project(":features:locations"))
 
     //Compose
     implementation("androidx.compose.material3:material3")
@@ -73,5 +74,6 @@ dependencies {
 
     //Koin
     implementation("io.insert-koin:koin-android:$koinVersion")
+    implementation(project(":features:locations"))
 
 }

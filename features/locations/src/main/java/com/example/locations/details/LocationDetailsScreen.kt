@@ -1,6 +1,5 @@
-package org.mathieu.characters.details
+package com.example.locations.details
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Vibrator
 import androidx.compose.animation.AnimatedContent
@@ -17,28 +16,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,50 +37,40 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.SubcomposeAsyncImage
-import kotlinx.coroutines.flow.onEach
-import org.mathieu.ui.Destination
 import org.mathieu.ui.composables.PreviewContent
-import org.mathieu.ui.navigate
-import kotlinx.coroutines.flow.collect
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.SubcomposeAsyncImage
+import org.mathieu.domain.models.character.Character
 
-private typealias UIState = CharacterDetailsState
-private typealias UIAction = CharacterDetailsAction
+
+private typealias UIState = LocationDetailsState
 
 @Composable
-fun CharacterDetailsScreen(
+fun LocationDetailsScreen(
     navController: NavController,
     id: Int
 ) {
-    val viewModel: CharacterDetailsViewModel = viewModel()
+    val viewModel: LocationDetailsViewModel = viewModel()
     val state by viewModel.state.collectAsState()
 
-    viewModel.init(characterId = id)
+    viewModel.init(locationId = id)
 
-    LaunchedEffect(viewModel) {
-        viewModel.events
-            .onEach { event ->
-                if(event is Destination.LocationDetails)
-                    navController.navigate(destination = event)
-            }.collect()
-    }
-
-    CharacterDetailsContent(
+    LocationDetailsContent(
         state = state,
-        onClickBack = navController::popBackStack,
-        onAction = viewModel::handleAction
+        onClickBack = navController::popBackStack
     )
 
 }
 
-
-@SuppressLint("ServiceCast", "MissingPermission")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
-private fun CharacterDetailsContent(
+private fun LocationDetailsContent(
     state: UIState = UIState(),
-    onClickBack: () -> Unit = { },
-    onAction: (UIAction) -> Unit = { }
+    onClickBack: () -> Unit = { }
 ) = Scaffold(topBar = {
 
     Row(
@@ -132,64 +113,18 @@ private fun CharacterDetailsContent(
                 )
             } ?: Box(modifier = Modifier.fillMaxSize()) {
 
-                Box(Modifier.align(Alignment.TopCenter)) {
-
-                    SubcomposeAsyncImage(
-                        modifier = Modifier
-                            .blur(100.dp)
-                            .alpha(0.3f)
-                            .fillMaxWidth(),
-                        model = state.avatarUrl,
-                        contentDescription = null
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .fillMaxWidth()
-                            .height(100.dp)
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(
-                                        Color.Transparent,
-                                        MaterialTheme.colorScheme.background
-                                    )
-                                )
-                            )
-                    )
-
-
-                }
-
                 Column(
                     modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    SubcomposeAsyncImage(
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(CircleShape)
-                            .shadow(3.dp),
-                        model = state.avatarUrl,
-                        contentDescription = null
-                    )
+                    Text(text = state.name + " - " + state.type)
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Text(text = state.name)
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Permet de faire vibrer le téléphone.
-                    val context = LocalContext.current
-                    val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-
-                    Card(modifier = Modifier.clickable {
-                        vibrator.vibrate(100)
-                        onAction(CharacterDetailsAction.SelectedLocation(state.locationId))
-                    }) {
-                        Text(
-                            text = state.locationName + " - " + state.locationType
-                        )
+                    LazyColumn {
+                        items(state.characters) { item ->
+                            ResidentItem(item)
+                        }
                     }
                 }
             }
@@ -197,10 +132,21 @@ private fun CharacterDetailsContent(
     }
 }
 
+@Composable
+fun ResidentItem(resident: Character) {
+    Card(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
+        Text(
+            modifier = Modifier.padding(16.dp),
+            text = resident.name,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Normal
+        )
+    }
+}
+
 
 @Preview
 @Composable
-private fun CharacterDetailsPreview() = PreviewContent {
-    CharacterDetailsContent()
+private fun LocationDetailsPreview() = PreviewContent {
+    LocationDetailsContent()
 }
-

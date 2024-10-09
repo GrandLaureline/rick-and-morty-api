@@ -4,7 +4,10 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mathieu.data.remote.responses.CharacterResponse
 import org.mathieu.data.repositories.tryOrNull
-import org.mathieu.domain.models.character.*
+import org.mathieu.domain.models.character.Character
+import org.mathieu.domain.models.character.CharacterGender
+import org.mathieu.domain.models.character.CharacterStatus
+import org.mathieu.domain.models.locationPreview.LocationPreview
 
 /**
  * Represents a character entity stored in the SQLite database. This object provides fields
@@ -21,6 +24,8 @@ import org.mathieu.domain.models.character.*
  * @property originId The origin location id.
  * @property locationName The current location name.
  * @property locationId The current location id.
+ * @property locationDimension The dimension of the location.
+ * @property locationType The type of the location.
  * @property image URL pointing to the character's avatar image.
  * @property created Timestamp indicating when the character entity was created in the database.
  */
@@ -36,6 +41,8 @@ internal class CharacterObject: RealmObject {
     var originId: Int = -1
     var locationName: String = ""
     var locationId: Int = -1
+    var locationDimension: String = ""
+    var locationType: String = ""
     var image: String = ""
     var created: String = ""
 }
@@ -65,5 +72,11 @@ internal fun CharacterObject.toModel() = Character(
     gender = tryOrNull { CharacterGender.valueOf(gender) } ?: CharacterGender.Unknown,
     origin = originName to originId,
     location = locationName to locationId,
-    avatarUrl = image
+    avatarUrl = image,
+    locationPreview = LocationPreview(
+            id = locationId,
+            name = locationName,
+            type = locationType,
+            dimension = locationDimension
+    )
 )

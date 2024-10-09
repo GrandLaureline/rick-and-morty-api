@@ -7,7 +7,7 @@ val compileVersion: String by project
 val minVersion: String by project
 
 android {
-    namespace = "org.mathieu.characters"
+    namespace = "com.example.locations"
     compileSdkVersion(compileVersion.toInt())
 
     defaultConfig {
@@ -19,6 +19,7 @@ android {
             isMinifyEnabled = false
         }
     }
+
     // Compose part
     buildFeatures {
         compose = true
@@ -35,7 +36,6 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-
 }
 
 val navVersion: String by project

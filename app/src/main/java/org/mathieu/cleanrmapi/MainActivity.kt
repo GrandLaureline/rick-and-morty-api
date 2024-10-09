@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.example.locations.details.LocationDetailsScreen
 import org.mathieu.characters.details.CharacterDetailsScreen
 import org.mathieu.characters.list.CharactersScreen
 import org.mathieu.ui.composable
@@ -39,7 +40,7 @@ private fun MainContent() {
     NavHost(navController = navController, startDestination = "characters") {
 
         composable(org.mathieu.ui.Destination.Characters) {
-            org.mathieu.characters.list.CharactersScreen(
+            CharactersScreen(
                 navController
             )
         }
@@ -48,9 +49,18 @@ private fun MainContent() {
             destination = org.mathieu.ui.Destination.CharacterDetails()
         ) { backStackEntry ->
 
-            org.mathieu.characters.details.CharacterDetailsScreen(
+            CharacterDetailsScreen(
                 navController = navController,
                 id = backStackEntry.arguments?.getInt("characterId") ?: -1
+            )
+        }
+
+        composable(
+            destination = org.mathieu.ui.Destination.LocationDetails()
+        ) { backStackEntry ->
+            LocationDetailsScreen(
+                navController = navController,
+                id = backStackEntry.arguments?.getInt("locationId") ?: -1
             )
 
         }
